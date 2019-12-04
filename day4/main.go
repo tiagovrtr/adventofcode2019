@@ -7,18 +7,24 @@ import (
 func is_password(pass int) bool {
 	num := pass
 	repeat := false
-	digit := pass % 10
+	repeatcount := 0
+	digit := num % 10
 	num /= 10
 
-	for div := 10; div/10 < num; num /= 10 {
+	for div := 10; num > 0; num /= 10 {
 		prevdigit := digit
 		digit = num % div
 		if digit > prevdigit {
 			return false
 		}
-		repeat = repeat || digit == prevdigit
+		if digit == prevdigit {
+			repeatcount++
+		} else {
+			repeat = repeat || (repeatcount == 1)
+			repeatcount = 0
+		}
 	}
-	if repeat {
+	if repeat || repeatcount == 1 {
 		return true
 	} else {
 		return false
