@@ -35,7 +35,7 @@ func (intcode IntCode) extract_opcode(i int, numargs map[int]int) (int, []int) {
 }
 
 func (intcode IntCode) operate() int {
-	numargs := map[int]int{1: 3, 2: 3, 3: 1, 4: 1, 99: 0}
+	numargs := map[int]int{1: 3, 2: 3, 3: 1, 4: 1, 5: 2, 6: 2, 7: 3, 8: 3, 99: 0}
 	op, addr := intcode.extract_opcode(0, numargs)
 	i := 0
 	for op != 99 {
@@ -60,6 +60,32 @@ func (intcode IntCode) operate() int {
 		case 4:
 			log.Printf("load intcode[%v]\n", intcode[i+1])
 			fmt.Println(intcode[intcode[i+1]])
+		case 5:
+			log.Printf("jump intcode[%v] if intcode[%v] true \n", addr[0], addr[1])
+			if intcode[addr[0]] != 0 {
+				i = intcode[addr[1]]
+				next = 0
+			}
+		case 6:
+			log.Printf("jump intcode[%v] if intcode[%v] false \n", addr[0], addr[1])
+			if intcode[addr[0]] == 0 {
+				i = intcode[addr[1]]
+				next = 0
+			}
+		case 7:
+			log.Printf("intcode[%v] = intcode[%v] < intcode[%v]\n", intcode[i+3], addr[0], addr[1])
+			var bit int
+			if intcode[addr[0]] < intcode[addr[1]] {
+				bit = 1
+			}
+			intcode[intcode[i+3]] = bit
+		case 8:
+			log.Printf("intcode[%v] = intcode[%v] == intcode[%v]\n", intcode[i+3], addr[0], addr[1])
+			var bit int
+			if intcode[addr[0]] == intcode[addr[1]] {
+				bit = 1
+			}
+			intcode[intcode[i+3]] = bit
 		}
 		i += next
 		op, addr = intcode.extract_opcode(i, numargs)
